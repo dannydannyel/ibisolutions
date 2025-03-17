@@ -10,6 +10,11 @@
 
 ## Partes de horas
 
+* TODO: 20250317 (1hrs)
+    - Creado repositorio remoto en github y compartido con Yanina
+    - Descargado en local Yanina y testado todo ok
+    - Reactualizada BBDD
+
 * TODO: 20250312 (1hrs)
     - Subido favicon de app
     - Estandarizados algunos includes para eliminar codigo duplicado
