@@ -42,14 +42,27 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
 
 //Update data detection
 if(isset($_POST['action']) && $_POST['action'] == 'update') {
-    $resUpd = $db->updateUser($_POST, $_POST['id']);
-    if($resUpd) {
-      echo $db->getLastInsert();
-
-      //redirect("admin/employer/");
+  
+    $userData = (object)$_POST;
+    // Revision de datos repetidos
+    $checkEmail = $db->checkUserEmailRep($_POST['email'], $_POST['id']);
+    if(!$checkEmail) {
+      $error = "Error, ya existe otra dirección con este correo";
     }
     else {
-      $error = "Error actualizando datos de usuario";
+      $resUpd = $db->updateUser($_POST, $_POST['id']);
+      
+      
+
+    
+      if($resUpd) {
+        
+        $message = "Actualizado usuario con identificador {$_POST['id']}";
+        //redirect("admin/employer/");
+      }
+      else {
+        $error = "Error actualizando datos de usuario";
+      }
     }
 
 }
@@ -57,15 +70,21 @@ if(isset($_POST['action']) && $_POST['action'] == 'update') {
 //Insert data detection
 if(isset($_POST['action']) && $_POST['action'] == 'create') {
   $dataIns = $_POST;
-  $dataIns['passwd'] = password_hash(IbiSolution::DEFAULT_PASS, PASSWORD_DEFAULT);
-
-  $resIns = $db->insertUser($dataIns);
-  if($resIns) {
-    $idUser = $db->getLastInsertId();
-    $message = "Usuario creado, su id es {$idUser} y su contraseña es " . IbiSolution::DEFAULT_PASS;
+  $checkEmail = $db->checkUserEmailRep($_POST['email']);
+  if($checkEmail) {
+    $error = "Error, ya existe otro usuario con este correo";
   }
   else {
-    $error = "Error insertando datos de usuario";
+    $dataIns['passwd'] = password_hash(IbiSolution::DEFAULT_PASS, PASSWORD_DEFAULT);
+
+    $resIns = $db->insertUser($dataIns);
+    if($resIns) {
+      $idUser = $db->getLastInsertId();
+      $message = "Usuario creado, su id es {$idUser} y su contraseña es " . IbiSolution::DEFAULT_PASS;
+    }
+    else {
+      $error = "Error insertando datos de usuario";
+    }
   }
 }
 

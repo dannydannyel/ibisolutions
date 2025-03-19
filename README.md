@@ -10,6 +10,10 @@
 
 ## Partes de horas
 
+* TODO: 20250319 (1hrs)
+    - Añadidos helpers en base de datos para corregir problemas con parametros de queries estilo :campo, que no fucnionaba bien. También comprobación de emails duplicados antes de crear/insertar usuarios
+    - Actualización de usuarios: Se tiene en cuenta que no se pueda repetir el email a la hora de crear/insertar
+
 * TODO: 20250317 (1hrs)
     - Creado repositorio remoto en github y compartido con Yanina
     - Descargado en local Yanina y testado todo ok

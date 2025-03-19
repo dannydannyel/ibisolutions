@@ -42,6 +42,12 @@ class DataBase {
         return $this->conn->real_escape_string($value);
     }
 
+    /**
+     * Executes a query using params as plain array (hash array not accepted)
+     * @param string $query
+     * @param array $params Plain array to match each ? in query string
+     * @return bool|mysqli_result False on error, que resultset when ok
+     */
     public function q(string $query, array $params=[]):false|mysqli_result {
 
         $res = $this->conn->execute_query($query, $params);
@@ -50,6 +56,21 @@ class DataBase {
             $this->lastErrorDetail = $this->conn->error;
             return false;
         }
+        return $res;
+    }
+
+    /**
+     * Executes query but accepts the :field format as hash array, not the ? method
+     * @param string $query The query to execute with :field format
+     * @param array $params A hash array with field=>value format
+     * @return false|mysqli_result False on error, resultset on ok for select query, true on updatable query result.
+     */
+    public function qParams(string $query, array $params=[]):bool|mysqli_result {
+      
+       $query = $this->replaceQueryParams($query, $params);
+        
+
+        $res = $this->qdirect($query);
         return $res;
     }
 
@@ -145,16 +166,12 @@ class DataBase {
      */
     public function updateUser(array $data, int $id):bool {
 
-
+        $data['id'] = $id;
+        
         $query = "UPDATE users SET dni=:dni, name=:name, surname=:surname, phone=:phone, role=:role, email=:email, address=:address WHERE id=:id";
         
-        foreach($data as $field=>$value) {
-            $value = $this->conn->real_escape_string($value);
-            $query = str_replace(":" . $field, "'". $value."'", $query);
-        }
-
-        //echo $query;
-        $res = $this->qdirect($query);
+       
+        $res = $this->qParams($query, $data);
         return $res;
             
         
@@ -232,6 +249,25 @@ class DataBase {
         
     }
 
+    public function checkUserEmailRep(string $mail, int $id=null):bool {
+        $params = [
+            'email' => $mail
+        ];
+        $query = "SELECT id FROM users WHERE email=:email";
+        if(is_numeric($id)) {
+            $params['id'] = $id;
+            $query .= " AND id<>:id";
+        }
+        
+        $res = $this->qParams($query, $params);
+        
+        if($res === false) {
+            return false;
+        }
+        
+        return $res->num_rows > 0;
+    }
+
 
     /**
      * Check a valid user login based on mail and password
@@ -270,6 +306,25 @@ class DataBase {
         return $row;
         
     
+    }
+
+    // Función para reemplazar los valores en la query de manera segura
+    private function replaceQueryParams($query, $params) {
+        $mysqli = $this->conn;
+        return preg_replace_callback(
+            '/:\b([a-zA-Z_][a-zA-Z0-9_]*)\b/', // Busca parámetros que inician con ":" y son palabras completas
+            function ($matches) use ($params, $mysqli) {
+                $key = $matches[1]; // Extraemos el nombre del parámetro sin ":"
+                if (!array_key_exists($key, $params)) {
+                    return $matches[0]; // Si no existe en los parámetros, lo dejamos igual
+                }
+                $value = $params[$key];
+
+                // Si el valor es numérico, lo dejamos tal cual; si es string, lo escapamos y lo ponemos entre comillas
+                return is_numeric($value) ? $value : "'" . $mysqli->real_escape_string($value) . "'";
+            },
+            $query
+        );
     }
  }
 
