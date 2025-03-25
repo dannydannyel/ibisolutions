@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 17-03-2025 a las 16:59:56
+-- Tiempo de generación: 25-03-2025 a las 20:20:06
 -- Versión del servidor: 9.1.0
 -- Versión de PHP: 8.3.14
 
@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS `job_orders` (
   `id` int NOT NULL AUTO_INCREMENT,
   `check_in` datetime DEFAULT NULL,
   `check_out` datetime DEFAULT NULL,
-  `iduser` int DEFAULT NULL,
+  `idemployer` int DEFAULT NULL,
+  `idemployee` int DEFAULT NULL COMMENT 'FK(users.id)',
   `idvilla` int DEFAULT NULL,
   `idservice` int DEFAULT NULL,
   `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT 'comentarios sobre el servicio',
@@ -40,10 +41,19 @@ CREATE TABLE IF NOT EXISTS `job_orders` (
   `check_out_employee` datetime DEFAULT NULL,
   `comment_time` text NOT NULL COMMENT 'solo lo edita empleado, errores de fichaje, incidencias sobre la hora',
   PRIMARY KEY (`id`),
-  KEY `job_orders_iduser_IDX` (`iduser`) USING BTREE,
+  KEY `job_orders_iduser_IDX` (`idemployer`) USING BTREE,
   KEY `job_orders_idvilla_IDX` (`idvilla`) USING BTREE,
-  KEY `job_orders_idservice_IDX` (`idservice`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `job_orders_idservice_IDX` (`idservice`) USING BTREE,
+  KEY `idemployee` (`idemployee`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `job_orders`
+--
+
+INSERT INTO `job_orders` (`id`, `check_in`, `check_out`, `idemployer`, `idemployee`, `idvilla`, `idservice`, `comment`, `check_in_employee`, `check_out_employee`, `comment_time`) VALUES
+(1, '2025-03-01 09:00:00', '2025-03-01 14:30:00', 3, 4, 1, 1, NULL, NULL, NULL, ''),
+(2, '2025-03-02 09:00:00', '2025-03-02 14:30:00', 3, 4, 3, 1, NULL, '2025-03-02 10:00:00', '2025-03-02 15:00:00', '');
 
 -- --------------------------------------------------------
 
@@ -137,8 +147,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   `passwd` varchar(255) NOT NULL COMMENT 'encrypted password using php native function',
   `role` enum('admin','employer','employee') DEFAULT 'employee',
   `address` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `users`
@@ -148,9 +159,10 @@ INSERT INTO `users` (`id`, `name`, `surname`, `dni`, `phone`, `email`, `passwd`,
 (1, 'admin', 'admin', '22222222Q', '6621341144', 'a@a.aa', '$2y$10$zbesai5OzNVLdK5mDiGqwuGeyFbTuHyb2gk0HXGdQm349xUbAG/9K', 'admin', 'calle de la alegria 7'),
 (3, 'Mariela', 'Bevans', '55555555q', '662134123', 'mariela@mariela.com', '$2y$10$JLfM8KHp1pw/3wBqV0iCnO4XXj1q7cOglgzjtjjn6pmAlO8ee2nT.', 'employer', 'calle de ningun sitio 2'),
 (4, 'Yanina', 'Echenique', '55465965Q', '662134123', 'yanina@yanina.com', '$2y$10$JLfM8KHp1pw/3wBqV0iCnO4XXj1q7cOglgzjtjjn6pmAlO8ee2nT.', 'employee', 'bunyola 13'),
-(5, 'asdgag', 'agagag', '34523525a', '254245245', 'a@a.aa', '$2y$10$aEAZTFaheNNS8Rn897ovJOfDS8L521kMrl3wa7wEzeswTBExrHbcm', 'admin', 'gaasgasfgasfg'),
-(6, 'asdgag', 'agagag', '34523525a', '254245245', 'a@a.aa', '$2y$10$iXk3UYmt1k5FyKDq9cPWuufHbdphfUhjIv/p4MFYy6RgxGC9DITSa', 'admin', 'gaasgasfgasfg'),
-(7, 'asdgag', 'agagag', '34523525a', '254245245', 'a@a.aa', '$2y$10$lxBAqI2CpTgBYYM5WiRYa.Dg0tNIvD50YbGCC7chKIO2OUa2F9sKS', 'admin', 'gaasgasfgasfg');
+(5, 'Asdgag', 'Gagrgol', '34523525a', '254245245', 'aa@a.aa', '$2y$10$aEAZTFaheNNS8Rn897ovJOfDS8L521kMrl3wa7wEzeswTBExrHbcm', 'admin', 'C/asoghasgoi'),
+(6, 'asdgag', 'agagag', '34523525a', '254245245', 'ab@a.aa', '$2y$10$iXk3UYmt1k5FyKDq9cPWuufHbdphfUhjIv/p4MFYy6RgxGC9DITSa', 'admin', 'gaasgasfgasfg'),
+(7, 'asdgag', 'agagag', '34523525a', '254245245', 'ac@a.aa', '$2y$10$lxBAqI2CpTgBYYM5WiRYa.Dg0tNIvD50YbGCC7chKIO2OUa2F9sKS', 'admin', 'gaasgasfgasfg'),
+(8, 'aaa', 'bbb', '05683406d', '20495845', 'a1@a.aa', '$2y$10$NjCIoNZ.9VmZUCYu1rkJ1u4btv6E3JbUPvfONLYBGs5WVH3Qw0sVe', 'employer', 'C/soto');
 
 -- --------------------------------------------------------
 
@@ -187,8 +199,9 @@ INSERT INTO `villas` (`id`, `name`, `address`, `iduser`, `num_rooms`, `num_baths
 -- Filtros para la tabla `job_orders`
 --
 ALTER TABLE `job_orders`
+  ADD CONSTRAINT `job_orders_idemployee_FK` FOREIGN KEY (`idemployee`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `job_orders_idemployer_FK` FOREIGN KEY (`idemployer`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `job_orders_services_FK` FOREIGN KEY (`idservice`) REFERENCES `services` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `job_orders_users_FK` FOREIGN KEY (`iduser`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `job_orders_villas_FK` FOREIGN KEY (`idvilla`) REFERENCES `villas` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --

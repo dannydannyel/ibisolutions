@@ -10,16 +10,20 @@
 
 ## Partes de horas
 
-* TODO: 20250319 (1hrs)
+* DONE: 20250325 (1hrs)
+    - Añadido plugin de js **FullCalendar** para empezar a crear el calendario de partes de trabajo para admins y employers del dashboard y empezado a investigar su funcionamiento. Creado un callback de ejemplo mostrando datos fake
+    - Cambiados índices de bbdd para hacer el mail único y además faltaba un campo en job_orders para el empleador y el empleado, renombrados los campos asimismo.
+
+* DONE: 20250319 (1hrs)
     - Añadidos helpers en base de datos para corregir problemas con parametros de queries estilo :campo, que no fucnionaba bien. También comprobación de emails duplicados antes de crear/insertar usuarios
     - Actualización de usuarios: Se tiene en cuenta que no se pueda repetir el email a la hora de crear/insertar
 
-* TODO: 20250317 (1hrs)
+* DONE: 20250317 (1hrs)
     - Creado repositorio remoto en github y compartido con Yanina
     - Descargado en local Yanina y testado todo ok
     - Reactualizada BBDD
 
-* TODO: 20250312 (1hrs)
+* DONE: 20250312 (1hrs)
     - Subido favicon de app
     - Estandarizados algunos includes para eliminar codigo duplicado
     - Iniciada sección de creación de **job order** con nuevos métodos necesarios en `database.php` y helpers en `globals.php` para trabajos con fechas
@@ -31,7 +35,7 @@
 
 Hace un login y accede la pagina `dashboard.php`.
 
-Debería aparecer un calendario del mes actual y marcados los dias donde hay un parte. En su defecto, que sea una lista con los próximos partes, por ejemplo 10 próximos con su fecha, nombre de villa. Y se pueda seleccionar para ver los detalles del parte.
+Debería aparecer un calendario del mes actual y marcados los días donde hay un parte. En su defecto, que sea una lista con los próximos partes, por ejemplo 10 próximos con su fecha, nombre de villa. Y se pueda seleccionar para ver los detalles del parte.
 
 Acciones disponibles:
 * **Nuevo parte**: Lleva a un formulario de crear un nuevo parte:

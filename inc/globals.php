@@ -69,3 +69,13 @@ function d(int $addDays = 0, bool $esFormat=false):string {
     }
     return ($esFormat) ? $date->format('d/m/Y') : $date->format('Y-m-d');
 }
+
+function jsonErrorDie(string $message, int $errCode = 0) {
+    header("Content-Type:application/json");
+    die(json_encode(['error' => $errCode, 'message' => $message]));
+}
+
+function jsonFullCalendarResponse(array $events) {
+    header("Content-Type:application/json");
+    die(json_encode($events));
+}
