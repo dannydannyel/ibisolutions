@@ -308,6 +308,37 @@ class DataBase {
     
     }
 
+    /**
+     * Check for duplicated task for a given employer in a given villa, taken care that is inside the same check in and check out range
+     * 
+     * @param string $dateCheckIn
+     * @param string $dateCheckOut
+     * @param int $idEmployer
+     * @param int $idVilla
+     * @return bool
+     */
+    public function checkReasignedService(string $dateCheckIn, string $dateCheckOut, int $idEmployee, int $idVilla):bool|null {
+        //example SELECT COUNT(*) as dup FROM job_orders WHERE (('2025-03-01 10:00' BETWEEN check_in AND check_out) OR ('2025-03-02 21:00' BETWEEN check_in AND check_out)) AND idemployee=4 AND idvilla=1;
+        //SELECT COUNT(*) as n FROM job_orders WHERE ((check_in <= '2025-03-01 10:00' AND check_out > '2025-03-01 10:00') OR (check_in < '2025-03-01 21:00' AND check_out > '2025-03-01 21:00')) AND idemployee=4 AND idvilla=1;
+        $query = "SELECT COUNT(*) as dup FROM job_orders WHERE ((? BETWEEN check_in AND check_out) OR (? BETWEEN check_in AND check_out)) AND idemployee=? AND idvilla=?";
+        
+        try {
+            echo $dateCheckIn, " ", $dateCheckOut, " ", $idEmployee, " ", $idVilla;
+            $res = $this->conn->execute_query($query, [$dateCheckIn, $dateCheckOut, $idEmployee, $idVilla]);
+        }
+        catch(mysqli_sql_exception $ex) {
+            $this->lastError = "Error interno revisando reasignación duplicada en villa";
+            $this->lastErrorDetail = "Error en query {$query} en metodo checkUserLogin";
+            return null;
+        }
+        if(!$res->num_rows) {
+            $this->lastErrorDetail = "Sutuación errónea imposible (singularidad sql)";
+            return null;
+        }
+        $row = $res->fetch_assoc();
+        return ($row['dup']>0);
+    }
+
     // Función para reemplazar los valores en la query de manera segura
     private function replaceQueryParams($query, $params) {
         $mysqli = $this->conn;

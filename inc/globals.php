@@ -1,7 +1,7 @@
 <?php
 class IbiSolution {
-    public const VERSION = "0.1.1";
-    public const LASTCHANGE = "20250319";
+    public const VERSION = "0.1.6";
+    public const LASTCHANGE = "20250327";
     public const DEFAULT_ROLE = "admin";
     public const DEFAULT_PASS = "Tawo07881!";
     public const ROLES = array('admin'=>"Admin", 'employer'=>"Dueño", 'employee'=>"Empleado");
@@ -68,6 +68,19 @@ function d(int $addDays = 0, bool $esFormat=false):string {
         $date->add(new DateInterval("P".$addDays."D"));
     }
     return ($esFormat) ? $date->format('d/m/Y') : $date->format('Y-m-d');
+}
+
+/**
+ * Alias of format date: Triest to convert datetime formatted in ISO 8601 (yyyy-mm-ddThh:mm:ss) into mysqli format (yyyy-mm-dd hh:mm:ss)
+ * 
+ * @param string $dateFormat The date formatted as ISO 8601
+ * @return string The formated date or the original in case not T detected
+ */
+function fd(string $dateFormat):string {
+    if(str_contains($dateFormat, 'T')) {
+        return str_replace('T', ' ', $dateFormat);
+    }
+    return $dateFormat;
 }
 
 function jsonErrorDie(string $message, int $errCode = 0) {

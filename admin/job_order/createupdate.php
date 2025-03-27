@@ -16,7 +16,8 @@ $action = "create";
 $jobOrderData = (object) [
     "check_in"=> d(),
     "check_out"=> d(7),
-    "iduser" => null,
+    "idemployer" => $_SESSION['id'],
+    "idemployee" => null,
     "idvilla"=> null,
     "idservice"=> null,
     "comment"=> null,
@@ -26,6 +27,24 @@ $userList = $db->getUserList(['employee']);
 $villaList = $db->getVillaList();
 $serviceList = $db->getServiceList();
 
+//Update data detection
+if(isset($_POST['action']) && $_POST['action'] == 'update') {
+  
+  $jobOrderData = (object)$_POST;
+  $jobOrderData->idemployer = $_SESSION['id'];
+}
+
+//Insert data detection
+if(isset($_POST['action']) && $_POST['action'] == 'create') {
+  $jobOrderData = (object)$_POST;
+  $jobOrderData->idemployer = $_SESSION['id'];
+  $dateCheckIn = fd($jobOrderData->check_in);
+  $dateCheckOut = fd($jobOrderData->check_out);
+  $idEmployee = $jobOrderData->idemployee;
+  $idVilla  = $jobOrderData->idvilla;
+  $resReasigned = $db->checkReasignedService($dateCheckIn, $dateCheckOut, $idEmployee, $idVilla);
+  var_dump($resReasigned);
+}
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -105,15 +124,15 @@ $serviceList = $db->getServiceList();
         <form class="row g-3" id="<?=$frmId?>" method="post">
             <div class="col-md-6">
                 <label for="inputCheckIn" class="form-label">Inicio</label>
-                <input type="date" class="form-control" name="check_in" id="inputCheckIn" value="<?=$jobOrderData->check_in?>" required min="<?=d()?>" max="<?=d(365)?>">
+                <input type="datetime-local" class="form-control" name="check_in" id="inputCheckIn" value="<?=$jobOrderData->check_in?>" required min="<?=d()?>" max="<?=d(365)?>">
             </div>
             <div class="col-md-6">
                 <label for="inputCheckOut" class="form-label">Fin</label>
-                <input type="date" class="form-control" name="check_out" id="inputCheckOut" value="<?=$jobOrderData->check_out?>" required min="<?=d()?>" max="<?=d(365)?>">
+                <input type="datetime-local" class="form-control" name="check_out" id="inputCheckOut" value="<?=$jobOrderData->check_out?>" required min="<?=d()?>" max="<?=d(365)?>">
             </div>
             <div class="col-md-6">
                 <label for="selEmployee" class="form-label">Empleado</label>
-                <select id="selEmployee" class="form-select" name="iduser" aria-label="Seleccionar propietario">
+                <select id="selEmployee" class="form-select" name="idemployee" aria-label="Seleccionar propietario" required>
                     <option value="">[Empleado]</option>
                     <?php foreach($userList as $owner):
                         $selectedAttr = ($owner['id'] == $villaData->iduser) ? " selected":'';
@@ -125,7 +144,7 @@ $serviceList = $db->getServiceList();
             </div>
             <div class="col-md-6">
                 <label for="selVilla" class="form-label">Villa</label>
-                <select id="selVilla" class="form-select" name="idvilla" aria-label="Seleccionar propietario">
+                <select id="selVilla" class="form-select" name="idvilla" aria-label="Seleccionar villa" required>
                     <option value="">[Villa]</option>
                     <?php foreach($villaList as $villa):
                         $selectedAttr = ($villa['id'] == $jobOrderData->idvilla) ? " selected":'';
@@ -137,7 +156,7 @@ $serviceList = $db->getServiceList();
             </div>
             <div class="col-md-4">
                 <label for="selService" class="form-label">Servicio</label>
-                <select id="selService" class="form-select" name="idservice" aria-label="Seleccionar propietario">
+                <select id="selService" class="form-select" name="idservice" aria-label="Seleccionar servicio" required>
                     <option value="">[Servicio]</option>
                     <?php foreach($serviceList as $service):
                         $selectedAttr = ($service['id'] == $jobOrderData->idservice) ? " selected":'';

@@ -6,9 +6,18 @@
 
 ## Tareas pendientes
 
-* TODO: Revisar emails duplicados antes de crear/actualizar usuario
+* OK: Revisar emails duplicados antes de crear/actualizar usuario
+* TODO: Aplicar funcionalidad correcta de FullCalendar en dashboard
+* TODO: Creación de partes de trabajo con comprobación de reasignaciones, etc...
+    - Estamos en método db->checkREasignedService
 
 ## Partes de horas
+
+* DONE 20250527 (0.5hrs)
+    - Verificando solapamiento tareas misma fecha mismo empleado en conflicto de parte de trabajo por rango de horas antes de proceder a insertar o actualizar una tarea de parte de trabajo, todo en sql
+
+* DONE 20250526 (0.5hrs)
+    - Continuando con sección de creación de partes, añadiendo campos requeridos y empezando a controlar valores duplicados, tareas reasignadas, etc...
 
 * DONE: 20250325 (1hrs)
     - Añadido plugin de js **FullCalendar** para empezar a crear el calendario de partes de trabajo para admins y employers del dashboard y empezado a investigar su funcionamiento. Creado un callback de ejemplo mostrando datos fake
