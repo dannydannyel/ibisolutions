@@ -1,56 +1,4 @@
-<?php
-require_once __DIR__ . "/inc/globals.php";
-$db = require_once __DIR__ . "/inc/database.php";
-session_start();
-
-$mail = $_POST['mail'] ?? null;
-$pwd = $_POST['passwd'] ?? null;
-$btn = $_POST['btnSignin'] ?? null;
-$sessionLogout = $_GET['auth'] ?? null;
-
-if($btn == 'on') { // El usuario hizo click en login
-  $res = $db->checkUserLogin($mail, $pwd);
-  if($res === false) {
-    $error = $db->getLastError();
-  }
-  elseif(is_null($res)) {
-    $error = "ERROR: Error de autenticación";
-  }
-  else {
-    $_SESSION['id'] = $res['id'];
-    $_SESSION['name'] = $res['name'];
-    $_SESSION['role'] = $res['role'];
-    switch($res['role']) {
-      case 'admin':
-        case 'employer':
-        redirect("admin/dashboard.php");
-        break;
-      case 'employee':
-        redirect('employee/dashboard.php');
-        break;
-      default:
-        $error = 'Error: Credenciales inválidas para proceder';
-    }
-  }
-}
-
-if($sessionLogout == 0) {
-  $error = "Sesión cerrada por inactividad o cierre de sesión";
-}
-?>
-<!doctype html>
-<html lang="en" data-bs-theme="auto">
-  <head>
-    <?php require_once BASE_PATH . "inc/parts/head.php";
-    require_once BASE_PATH . "inc/parts/common_style.php";
-?>
-
-    
-    <!-- Custom styles for this template -->
-    <link href="css/sign-in.css" rel="stylesheet">
-  </head>
-  <body class="d-flex align-items-center py-4 bg-body-tertiary">
-    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+<svg xmlns="http://www.w3.org/2000/svg" class="d-none">
       <symbol id="check2" viewBox="0 0 16 16">
         <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
       </symbol>
@@ -66,7 +14,7 @@ if($sessionLogout == 0) {
       </symbol>
     </svg>
 
-    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
+<div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
       <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center"
               id="bd-theme"
               type="button"
@@ -100,29 +48,3 @@ if($sessionLogout == 0) {
         </li>
       </ul>
     </div>
-
-    
-<main class="form-signin w-100 m-auto">
-  <form action="index.php" method="post">
-    <img class="mb-4" src="img/icon/android-chrome-192x192.png" alt="iconibisolution" width="72" height="72">
-    <h1 class="h3 mb-3 fw-normal">Inicie sesión</h1>
-      <?php if(isset($error)):?>
-        <div class="alert alert-danger"><?=$error?></div>
-      <?php endif;?>
-    <div class="form-floating">
-      <input type="email" name="mail" class="form-control" id="floatingInput" placeholder="name@example.com">
-      <label for="floatingInput">Email</label>
-    </div>
-    <div class="form-floating">
-      <input type="password" name="passwd" class="form-control" id="floatingPassword" placeholder="Password">
-      <label for="floatingPassword">Contraseña</label>
-    </div>
-
-    
-    <button class="btn btn-primary w-100 py-2" type="submit" name="btnSignin" value="on">Inicie sesión</button>
-    <p class="mt-5 mb-3 text-body-secondary">&copy; ibisolution.com</p>
-  </form>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    </body>
-</html>

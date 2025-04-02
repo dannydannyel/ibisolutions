@@ -10,13 +10,23 @@
 * TODO: Aplicar funcionalidad correcta de FullCalendar en dashboard
 * TODO: Creación de partes de trabajo con comprobación de reasignaciones, etc...
     - Estamos en método db->checkREasignedService
+    - Faltaría comprobar fechas anteriores o imposibles? Por ejemplo fecha fin anterior a fecha inicio?
 
 ## Partes de horas
 
-* DONE 20250527 (0.5hrs)
+* DONE 20250402 (1hrs)
+    - Creación de eventos reales en el calendario FullCalendar con una query muy tocha que lo hace todo
+    - Añadidos colores a los eventos devueltos a FullCalendar para cada tipo de situación de tarea (que esté por inciiar, que esté finalizada o que esté en ello).
+
+* DONE 20250401 (0.5hrs)
+    - Creación de job orders comprobando que no haya match con mismo empleado en misma franja horaria y en misma villa.
+    - Extracción para include de parte de cambio de modo oscuro de Bootstrap
+    - Corrección de enlace principal de IbiSolutions logo para que enlace con el dashboard pertienente acorde al valor de rol de sesión.
+
+* DONE 20250327 (0.5hrs)
     - Verificando solapamiento tareas misma fecha mismo empleado en conflicto de parte de trabajo por rango de horas antes de proceder a insertar o actualizar una tarea de parte de trabajo, todo en sql
 
-* DONE 20250526 (0.5hrs)
+* DONE 20250326 (0.5hrs)
     - Continuando con sección de creación de partes, añadiendo campos requeridos y empezando a controlar valores duplicados, tareas reasignadas, etc...
 
 * DONE: 20250325 (1hrs)

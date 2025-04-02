@@ -159,6 +159,12 @@ class DataBase {
         return $res;
     }
 
+
+    public function getFullJobOrder(int $idEmployer):false|mysqli_result {
+        $query = "SELECT u.name, u.surname, u.id as iduser, v.name as villa, v.id as idvilla, j.id as idjob, j.check_in, j.check_out, j.check_in_employee, j.check_out_employee FROM users u INNER JOIN job_orders j ON u.id=j.idemployee INNER JOIN villas v ON j.idvilla=v.id WHERE j.idemployer=:idEmployer";
+        $res = $this->qParams($query, ['idEmployer' => $idEmployer]);
+        return $res;
+    }
     /**
      * Actualiza la info de usuario basado en un array hash de parámetros
      * 
@@ -249,6 +255,24 @@ class DataBase {
         
     }
 
+
+    /**
+     * Crea un nuevo parte de trabajo, recibiendo un array hash con los valores
+     * 
+     * @return false|true error, or ok
+     */
+    public function insertJobOrder(array $data):bool {
+
+
+        $query = "INSERT INTO job_orders SET check_in=:check_in, check_out=:check_out, idemployer=:idemployer, idemployee=:idemployee, idvilla=:idvilla, idservice=:idservice, comment=:comment";
+        
+    
+        //echo $query;
+        $res = $this->qParams($query, $data);
+        return $res;
+            
+        
+    }
     public function checkUserEmailRep(string $mail, int $id=null):bool {
         $params = [
             'email' => $mail
@@ -323,7 +347,7 @@ class DataBase {
         $query = "SELECT COUNT(*) as dup FROM job_orders WHERE ((? BETWEEN check_in AND check_out) OR (? BETWEEN check_in AND check_out)) AND idemployee=? AND idvilla=?";
         
         try {
-            echo $dateCheckIn, " ", $dateCheckOut, " ", $idEmployee, " ", $idVilla;
+            //echo $dateCheckIn, " ", $dateCheckOut, " ", $idEmployee, " ", $idVilla;
             $res = $this->conn->execute_query($query, [$dateCheckIn, $dateCheckOut, $idEmployee, $idVilla]);
         }
         catch(mysqli_sql_exception $ex) {
