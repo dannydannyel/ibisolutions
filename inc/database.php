@@ -142,6 +142,15 @@ class DataBase {
     }
 
     /**
+     * Localiza un registro de trabajo por su id incluyendo registros asociados en otras tablas para generar info ampliada
+     */
+    public function getJobDataById(int $id):false|mysqli_result {
+        $query = "SELECT u.name, u.surname, u.id as iduser, v.name as villa, v.id as idvilla, j.id as idjob, j.check_in, j.check_out, j.check_in_employee, j.check_out_employee, j.idemployee, j.comment, j.comment_time FROM users u INNER JOIN job_orders j ON u.id=j.idemployee INNER JOIN villas v ON j.idvilla=v.id WHERE j.id=:idJob";
+        $res = $this->qParams($query, ['idJob' => $id]);
+        return $res;
+    }
+
+    /**
      * Localiza un regsitro de usuario por su id
      */
     public function getUserById(int $id):false|mysqli_result {
@@ -151,7 +160,7 @@ class DataBase {
     }
 
      /**
-     * Localiza un regsitro de usuario por su id
+     * Localiza un registro de villa por su id
      */
     public function getVillaById(int $id):false|mysqli_result {
         $query = "SELECT id, name, address, iduser, num_rooms, num_baths, pool FROM villas WHERE id=?";
@@ -161,10 +170,16 @@ class DataBase {
 
 
     public function getFullJobOrder(int $idEmployer):false|mysqli_result {
-        $query = "SELECT u.name, u.surname, u.id as iduser, v.name as villa, v.id as idvilla, j.id as idjob, j.check_in, j.check_out, j.check_in_employee, j.check_out_employee FROM users u INNER JOIN job_orders j ON u.id=j.idemployee INNER JOIN villas v ON j.idvilla=v.id WHERE j.idemployer=:idEmployer";
+        $query = "SELECT u.name, u.surname, u.id as iduser, v.name as villa, v.id as idvilla, j.id as idjob, j.check_in, j.check_out, j.check_in_employee, j.check_out_employee, j.idemployee FROM users u INNER JOIN job_orders j ON u.id=j.idemployee INNER JOIN villas v ON j.idvilla=v.id WHERE j.idemployer=:idEmployer";
         $res = $this->qParams($query, ['idEmployer' => $idEmployer]);
         return $res;
     }
+    public function getEmployeeTasks(int $idEmployee):false|mysqli_result {
+        $query = "SELECT u.name, u.surname, u.id as iduser, v.name as villa, v.id as idvilla, j.id as idjob, j.check_in, j.check_out, j.check_in_employee, j.check_out_employee, j.idemployee, j.comment, j.comment_time FROM users u INNER JOIN job_orders j ON u.id=j.idemployee INNER JOIN villas v ON j.idvilla=v.id WHERE j.idemployee=:idEmployee";
+        $res = $this->qParams($query, ['idEmployee' => $idEmployee]);
+        return $res;
+    }
+
     /**
      * Actualiza la info de usuario basado en un array hash de parámetros
      * 

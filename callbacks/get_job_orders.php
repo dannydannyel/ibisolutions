@@ -21,6 +21,7 @@ foreach($jobOrderData as $row) {
     $idJob = $row['idjob'];
     $villa = $row['villa'];
     $employee = $row['name'] . " " . $row['surname'];
+    $idEmployee = $row['idemployee'];
     $checkIn = $row['check_in'];
     $checkOut = $row['check_out'];
     $eCheckIn = $row['check_in_employee'];
@@ -44,7 +45,8 @@ foreach($jobOrderData as $row) {
         'title' => "Villa: " . $villa . ", Empleado: " . $employee,
         'start'=> $row['check_in'],
         'end' => $row['check_out'],
-        'backgroundColor' => $backgroundColor
+        'backgroundColor' => $backgroundColor,
+        'extendedProps' => ['idEmp' => $idEmployee]
     ];
 }
 /*

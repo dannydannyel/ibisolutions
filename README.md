@@ -1,19 +1,22 @@
 # Partes de horas DANNY y tareas pendientes
 
 ## Preguntas pendientes
-
 * **Job orders**: En la cración / actualización, se puede asignar más de un empleado a una villa que ya está cogida por otro incluso mismo empleado, fechas coincidentes, etc, osea hay que revisar todas las coincidencias?
 
 ## Tareas pendientes
-
 * OK: Revisar emails duplicados antes de crear/actualizar usuario
+* TODO: Logue como empleado, ver su lista de partes de trabajo y poder fichar entrada, salida, leer comentarios de tarea y poder escribir los suyos propios con incidencias
+* TODO: Acciones para elimnar tareas pasadas? Porque sino llegará un momento que un empleado tendrá cientos y es muy malo para buscar y sin sentido. Eliminar todas las que pasaron ya? O dejar elegir una a una?
 * TODO: Aplicar funcionalidad correcta de FullCalendar en dashboard
 * TODO: Creación de partes de trabajo con comprobación de reasignaciones, etc...
     - Estamos en método db->checkREasignedService
     - Faltaría comprobar fechas anteriores o imposibles? Por ejemplo fecha fin anterior a fecha inicio?
 
 ## Partes de horas
-
+* DONE 20250422 (0.5 hrs)
+    - **admin/empleador**: Modificación del modal de selección de job en calendario, ahora muestra el detalle solo del job seleccionado y podrá editar los campos como el checkin de empleado y checkout y el comentario de admin, por si quiere añadirle algo.
+* DONE 20250415 (1 hrs)
+    - Creación de modal con detalle de partes de trabajo al clicar en evento de calendario
 * DONE 20250402 (1hrs)
     - Creación de eventos reales en el calendario FullCalendar con una query muy tocha que lo hace todo
     - Añadidos colores a los eventos devueltos a FullCalendar para cada tipo de situación de tarea (que esté por inciiar, que esté finalizada o que esté en ello).
