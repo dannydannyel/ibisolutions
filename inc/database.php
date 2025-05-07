@@ -68,9 +68,10 @@ class DataBase {
     public function qParams(string $query, array $params=[]):bool|mysqli_result {
       
        $query = $this->replaceQueryParams($query, $params);
-        
+        //echo $query;
 
         $res = $this->qdirect($query);
+        
         return $res;
     }
 
@@ -145,7 +146,7 @@ class DataBase {
      * Localiza un registro de trabajo por su id incluyendo registros asociados en otras tablas para generar info ampliada
      */
     public function getJobDataById(int $id):false|mysqli_result {
-        $query = "SELECT u.name, u.surname, u.id as iduser, v.name as villa, v.id as idvilla, j.id as idjob, j.check_in, j.check_out, j.check_in_employee, j.check_out_employee, j.idemployee, j.comment, j.comment_time FROM users u INNER JOIN job_orders j ON u.id=j.idemployee INNER JOIN villas v ON j.idvilla=v.id WHERE j.id=:idJob";
+        $query = "SELECT u.name, u.surname, u.id as iduser, v.name as villa, v.id as idvilla, j.id as idjob, j.check_in, j.check_out, j.idemployer, j.idvilla, j.idservice, j.check_in_employee, j.check_out_employee, j.idemployee, j.comment, j.comment_time FROM users u INNER JOIN job_orders j ON u.id=j.idemployee INNER JOIN villas v ON j.idvilla=v.id WHERE j.id=:idJob";
         $res = $this->qParams($query, ['idJob' => $id]);
         return $res;
     }
@@ -219,8 +220,17 @@ class DataBase {
         $res = $this->qdirect($query);
         return $res;
             
+    }
+
+    public function updateJobOrder(array $data, int $id): bool {
+        $data['id'] = $id;
+
+        $query = "UPDATE job_orders SET check_in=:check_in, check_out=:check_out, idemployer=:idemployer, idemployee=:idemployee, comment=:comment, check_in_employee=:check_in_employee, check_out_employee=:check_out_employee, comment_time=:comment_time WHERE id=:id";
         
-        
+
+        //echo $query;
+        $res = $this->qParams($query, $data);
+        return $res;
     }
 
     /**
@@ -391,6 +401,8 @@ class DataBase {
                 $value = $params[$key];
 
                 // Si el valor es numérico, lo dejamos tal cual; si es string, lo escapamos y lo ponemos entre comillas
+                if(is_null($value))
+                    return "NULL";
                 return is_numeric($value) ? $value : "'" . $mysqli->real_escape_string($value) . "'";
             },
             $query

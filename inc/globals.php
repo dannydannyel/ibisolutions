@@ -1,7 +1,7 @@
 <?php
 class IbiSolution {
-    public const VERSION = "0.2.01";
-    public const LASTCHANGE = "20250506";
+    public const VERSION = "0.2.02";
+    public const LASTCHANGE = "20250507";
     public const DEFAULT_ROLE = "admin";
     public const DEFAULT_PASS = "Tawo07881!";
     public const ROLES = array('admin'=>"Admin", 'employer'=>"Dueño", 'employee'=>"Empleado");
@@ -91,4 +91,13 @@ function jsonErrorDie(string $message, int $errCode = 0) {
 function jsonFullCalendarResponse(array $events) {
     header("Content-Type:application/json");
     die(json_encode($events));
+}
+
+/**
+ * Devuelve una fecha y tiempo de ahora en formato mysql listo para actualizar BBDD
+ * 
+ * @return string Fecha y hora validos de ahora en formato yyyy-mm-dd hh:mm:ss
+ */
+function getNowDt():string {
+    return (new DateTime())->format('Y-m-d H:i:s');
 }

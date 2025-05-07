@@ -20,8 +20,8 @@ checkAuth();
 <?php include_once BASE_PATH . "/inc/parts/breadcrumbs.php";?>
 <main class="container">
   
-  <section class="py-5 text-center container">
-    <div class="row py-lg-5">
+  <section class="py-3 text-center container">
+    <div class="row py-lg-2">
       <div class="col-lg-6 col-md-8 mx-auto">
         <h1 class="fw-light">Ibisolutions</h1>
 
@@ -46,6 +46,7 @@ checkAuth();
         <h6>Datos del parte</h6>
         <div style="max-height: 300px; overflow-y: auto;">
           <form id="jobData">
+            <input type="hidden" id="hidIdJob" value="">
           <div class="row">
             <div class="col-md-12">
                 <b>Villa:</b> <span id="villa"></span>
@@ -73,21 +74,23 @@ checkAuth();
             <div class="col-md-6">
                 <button type="button" class="btn btn-lg btn-success" id="checkOutEmpAction" style="display:none">FICHAR SALIDA</button>
             </div>
-            <div class="col-md-12">             
+            <div class="col-md-12 pt-2">             
                 <textarea id="jobSummary" class="form-control" disabled></textarea>
             </div>
           </div>
 
+          <div id="modalError" class="alert alert-danger" style="display:none"></div>
+          <div id="modalSuccess" class="alert alert-success" style="display:none"></div>
           <hr>
 
           
           <div class="mb-3">
-            <label for="employeeComment" class="form-label">Mis comentario de la tarea</label>
+            <label for="employeeComment" class="form-label">Incidencias de la tarea</label>
             <textarea id="employeeComment" class="form-control" rows="2"></textarea>
           </div>
 
           <div class="d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <button id="btnSaveComment" type="submit" class="btn btn-primary">Guardar comentario</button>
           </div>
           </form>
         </div>
@@ -108,6 +111,18 @@ checkAuth();
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js'></script>
 <script>
+  function displayModalError(mess) {
+    document.getElementById('modalSuccess').innerText = '';
+    document.getElementById('modalSuccess').style.display = 'none';
+    document.getElementById('modalError').style.display = 'block';
+    document.getElementById('modalError').innerText = mess;
+  }
+  function displayModalSuccess(mess) {
+    document.getElementById('modalError').innerText = '';
+    document.getElementById('modalError').style.display = 'none';
+    document.getElementById('modalSuccess').style.display = 'block';
+    document.getElementById('modalSuccess').innerText = mess;
+  }
   document.addEventListener('DOMContentLoaded', () => {
     const calendarEl = document.getElementById('calendar');
     const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -120,7 +135,7 @@ checkAuth();
       eventClick: (info) => {
         info.jsEvent.preventDefault();
        
-        console.log(info.event);
+        //console.log(info.event);
         const idEmp = parseInt(info.event.extendedProps.idEmp);
         const idJob = parseInt(info.event.id);
 
@@ -128,9 +143,16 @@ checkAuth();
       fetch('../callbacks/get_job_data.php?id=' + idJob)
         .then(response => response.json())
         .then(data => {
+          document.getElementById('hidIdJob').value = idJob;
             document.getElementById('checkInEmpAction').style.display = 'none';
+            document.getElementById('checkInEmpAction').disabled = false;
             document.getElementById('checkOutEmpAction').style.display = 'none';
+            document.getElementById('checkOutEmpAction').disabled = false;
+            document.getElementById('employeeComment').disabled = false;
             document.getElementById('jobSummary').style.display = 'none';
+            document.getElementById('btnSaveComment').disabled = false;
+            document.getElementById('modalError').style.display = 'none';
+            document.getElementById('modalSuccess').style.display = 'none';
           // Mostramos datos del empleado
           const { name, surname, dni, phone, email } = data.employee;
           
@@ -153,6 +175,9 @@ checkAuth();
         document.getElementById('checkIn').value = formatForInput(job.check_in);
         document.getElementById('checkOut').value = formatForInput(job.check_out);
         document.getElementById('adminComment').value = job.comment ?? '';
+        document.getElementById('employeeComment').value = job.comment_time != '' ? job.comment_time: "";
+        
+        // Preparación de botones de fichaje según el caso
         if(job.check_in_employee == null) {
             document.getElementById('checkInEmpAction').style.display = 'block';
             document.getElementById('checkOutEmpAction').style.display = 'none';
@@ -162,20 +187,23 @@ checkAuth();
             document.getElementById('checkOutEmpAction').style.display = 'block';
         }
         else if(job.check_in_employee != null && job.check_out_employee != null) {
-            //TODO: Tarea realizada
+            //Tarea realizada
             document.getElementById('jobSummary').style.display = 'block';
             document.getElementById('jobSummary').value = `Tarea realizada en ${job.check_in_employee} - ${job.check_out_employee}`;
 
             document.getElementById('checkInEmpAction').disabled = true;
             document.getElementById('checkOutEmpAction').disabled = true;
-            document.getElementById('checkInEmpAction').style.display = 'block';
-            document.getElementById('checkOutEmpAction').style.display = 'block';
+            document.getElementById('employeeComment').disabled = true;
+            document.getElementById('checkInEmpAction').style.display = 'none';
+            document.getElementById('checkOutEmpAction').style.display = 'none';
+            document.getElementById('btnSaveComment').disabled = true;
         }
         /*
         document.getElementById('checkInEmp').value = formatForInput(job.check_in_employee);
         document.getElementById('checkOutEmp').value = formatForInput(job.check_out_employee);
         */
-        document.getElementById('employeeComment').value = job.comment_employee ?? '';
+       
+        
 
         // Agregar listeners a los check_in
         /*
@@ -211,6 +239,105 @@ checkAuth();
       if (!datetimeStr) return '';
       return datetimeStr.replace(' ', 'T');
     }
+
+    document.getElementById('checkInEmpAction').addEventListener('click', e => {
+      e.preventDefault();
+      
+      const idJob = document.getElementById('hidIdJob').value;
+      
+      clockInOutEmployee(idJob);
+    });
+    document.getElementById('checkOutEmpAction').addEventListener('click', e => {
+      e.preventDefault();
+      
+      const idJob = document.getElementById('hidIdJob').value;
+      
+      clockInOutEmployee(idJob);
+    });
+
+    function clockInOutEmployee(idJob) {
+      
+      //You can set headers like this:
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+
+      fetch('../callbacks/clock_inout_employee.php?id=' + idJob, {
+        method: 'PUT',
+        headers: headers,
+        body: ''
+      })
+      .then(response => {
+        if(!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(responseData => {
+        console.log("Call to save comment success:", responseData);
+        const code = responseData.code ?? null;
+        const message = responseData.message ?? null;
+        if(code === null) {
+          throw new Error("Error obteniendo respuesta formateada (code)");
+        }
+        if(code != 0) {
+          displayModalError(`Error de respuesta ${code}: ${message}`);
+          return;
+        }
+        //El mensaje es un array para el tipo de fichaje ('in' o 'out') y un mensaje
+        if(message[0] == 'in') {
+          document.getElementById('checkInEmpAction').disabled = true;
+        }
+        else {
+          document.getElementById('checkOutEmpAction').disabled = true;
+        }
+        displayModalSuccess(message[1]);
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        displayModalError(error);
+      })
+    }
+
+    document.getElementById('btnSaveComment').addEventListener('click', e => {
+      e.preventDefault();
+      const idJob = document.getElementById('hidIdJob').value;
+      const jsonData = JSON.stringify({
+        comment: document.getElementById('employeeComment').value,
+      });
+      //You can set headers like this:
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+
+      fetch('../callbacks/save_comment_employee.php?id=' + idJob, {
+        method: 'PUT',
+        headers: headers,
+        body: jsonData
+      })
+      .then(response => {
+        if(!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(responseData => {
+        console.log("Call to save comment success:", responseData);
+        const code = responseData.code ?? null;
+        const message = responseData.message ?? null;
+        if(code === null) {
+          throw new Error("Error obteniendo respuesta formateada (code)");
+        }
+        if(code != 0) {
+          displayModalError(`Error de respuesta ${code}: ${message}`);
+          return;
+        }
+        displayModalSuccess("Actualizado el comentario correctamente");
+        
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        displayModalError(error);
+      })
+    })
 </script>
     </body>
 </html>
