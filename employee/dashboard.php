@@ -91,6 +91,7 @@ checkAuth();
 
           <div class="d-flex justify-content-end">
             <button id="btnSaveComment" type="submit" class="btn btn-primary">Guardar comentario</button>
+            <button type="button" class="btn btn-secondary ms-2" data-bs-dismiss="modal" aria-label="Cerrar">Cerrar</button>
           </div>
           </form>
         </div>
@@ -123,9 +124,20 @@ checkAuth();
     document.getElementById('modalSuccess').style.display = 'block';
     document.getElementById('modalSuccess').innerText = mess;
   }
+
+  function closeAndRefreshCalendar(mess) {
+    const modal = document.getElementById('employeeModal');
+    
+    displayModalSuccess(mess);
+    modal.addEventListener('hidden.bs.modal', function () {
+      calendar.refetchEvents();
+    });
+  }
+ 
+  let calendar = null;
   document.addEventListener('DOMContentLoaded', () => {
-    const calendarEl = document.getElementById('calendar');
-    const calendar = new FullCalendar.Calendar(calendarEl, {
+      const calendarEl = document.getElementById('calendar');
+      calendar = new FullCalendar.Calendar(calendarEl, {
       
       themeSystem: 'bootstrap5',
       
@@ -287,10 +299,15 @@ checkAuth();
         if(message[0] == 'in') {
           document.getElementById('checkInEmpAction').disabled = true;
         }
-        else {
+        else { //Out
           document.getElementById('checkOutEmpAction').disabled = true;
+          document.getElementById('employeeComment').disabled = true;
+          document.getElementById('btnSaveComment').disabled = true;
         }
         displayModalSuccess(message[1]);
+        //Recargar eventos del calendario
+        calendar.refetchEvents();
+        //closeAndRefreshCalendar(message[1]);
       })
       .catch(error => {
         console.error("Error:", error);

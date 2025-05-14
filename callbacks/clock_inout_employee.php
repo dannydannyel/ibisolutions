@@ -36,20 +36,23 @@ if(empty($jobData['check_in_employee'])) {
     //Es un fichaje de entrada
     $jobData['check_in_employee'] = getNowDt();
     $type = 'in';
+    $message = "Fichaje realizado con éxito, puedes cerrar la ventanita y volver a entrar en el parte más tarde si tienes que realizar la salida";
 }
 else {
     //Es un fichaje de salida
     $jobData['check_out_employee'] = getNowDt();
     $type = 'out';
+    $message = "Fichaje de salida realizado con éxito. Tarea marcada como completada";
 }
 //print_r($jobData);
 $res = $db->updateJobOrder($jobData, $idJob);
+//$res = true;
 
 if(!$res) {
     jsonResponse(3, "Error: Error actualizando fichaje");
 }
 
-jsonResponse(0, [$type, "Fichaje realizado con éxito, puedes cerrar la ventanita y volver a entrar en el parte más tarde si tienes que realizar la salida"]);
+jsonResponse(0, [$type, $message]);
 
 function jsonResponse(int $code, mixed $message):string {
     header("Content-Type: application/json");

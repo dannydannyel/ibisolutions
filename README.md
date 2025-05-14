@@ -5,14 +5,21 @@
 
 ## Tareas pendientes
 * OK: Revisar emails duplicados antes de crear/actualizar usuario
-* TODO: Logue como empleado, ver su lista de partes de trabajo y poder fichar entrada, salida, leer comentarios de tarea y poder escribir los suyos propios con incidencias
-* TODO: Acciones para elimnar tareas pasadas? Porque sino llegará un momento que un empleado tendrá cientos y es muy malo para buscar y sin sentido. Eliminar todas las que pasaron ya? O dejar elegir una a una?
-* TODO: Aplicar funcionalidad correcta de FullCalendar en dashboard
-* TODO: Creación de partes de trabajo con comprobación de reasignaciones, etc...
-    - Estamos en método db->checkREasignedService
+* OK: Logue como empleado, ver su lista de partes de trabajo y poder fichar entrada, salida, leer comentarios de tarea y poder escribir los suyos propios con incidencias
+* TODO: Acción asíncrona en admin dashboard, en el modal del parte de trabajo para generar un comentario de tarea
+* TODO: Mostar botón de salir en menú header de employee
+* QUEST: Acciones para elimnar tareas pasadas? Porque sino llegará un momento que un empleado tendrá cientos y es muy malo para buscar y sin sentido. Eliminar todas las que pasaron ya? O dejar elegir una a una?
+* OK: Aplicar funcionalidad correcta de FullCalendar en dashboard
+* QUEST: Creación de partes de trabajo con comprobación de reasignaciones, etc...
+    - Estamos en método db->checkReasignedService
     - Faltaría comprobar fechas anteriores o imposibles? Por ejemplo fecha fin anterior a fecha inicio?
+* QUEST: empleados/lista de partes, muestra todos, y a medida que mas haya, cientos miles, la lista será de cientos miles, filtar por algo o que el admin vaya borrando los pasados?
+* QUEST: admin: borrar partes finalizados, una opcion que por ejemplo vacie la tabla de job_orders que estan finalizados
 
 ## Partes de horas
+* 20250514 (2 hrs)
+    - **employee/dashboard**: Finalización de detallitos como actualizar el calendario al haber hecho un fichaje para que se refleje y mostrar bien los comentarios de los fichajes en el modal
+    - **employee/job_order**: Muestra una tabla ordenada por fecha o bien con las tareas que requiren algún fichaje o bien la lista de tareas finalizadas completas. Permite hacer fichajes y filtar por todas las pendientes o todas las finalizadas.
 * 20250507 (2 hrs)
     - **employee/dashboard**: Continuando con la modal de fichaje y comentario
         - Se ha termindo la sección de fichajes y de comentario del parte

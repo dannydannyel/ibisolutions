@@ -1,7 +1,7 @@
 <?php
 class IbiSolution {
-    public const VERSION = "0.2.02";
-    public const LASTCHANGE = "20250507";
+    public const VERSION = "0.2.03";
+    public const LASTCHANGE = "20250514";
     public const DEFAULT_ROLE = "admin";
     public const DEFAULT_PASS = "Tawo07881!";
     public const ROLES = array('admin'=>"Admin", 'employer'=>"Dueño", 'employee'=>"Empleado");

@@ -175,8 +175,15 @@ class DataBase {
         $res = $this->qParams($query, ['idEmployer' => $idEmployer]);
         return $res;
     }
-    public function getEmployeeTasks(int $idEmployee):false|mysqli_result {
+    public function getEmployeeTasks(int $idEmployee, bool $currentDate=false, bool $orderByDate = false):false|mysqli_result {
         $query = "SELECT u.name, u.surname, u.id as iduser, v.name as villa, v.id as idvilla, j.id as idjob, j.check_in, j.check_out, j.check_in_employee, j.check_out_employee, j.idemployee, j.comment, j.comment_time FROM users u INNER JOIN job_orders j ON u.id=j.idemployee INNER JOIN villas v ON j.idvilla=v.id WHERE j.idemployee=:idEmployee";
+        if($currentDate) {
+            $query .= " AND (j.check_in BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 1 DAY))";
+        }
+        if($orderByDate) {
+            $query .= " ORDER BY j.check_in";
+        }
+       
         $res = $this->qParams($query, ['idEmployee' => $idEmployee]);
         return $res;
     }
