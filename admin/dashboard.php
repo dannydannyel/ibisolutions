@@ -45,10 +45,12 @@ checkAuth();
       </div>
       <div class="modal-body">
         <div id="employeeDetails"></div>
+        <div id="success-message" class="alert alert-success" style="display: none;"></div>
+        <div id="error-message" class="alert alert-danger" style="display: none;"></div>
         <hr>
         <h6>Trabajos realizados</h6>
         <div style="max-height: 300px; overflow-y: auto;">
-          <form id="jobData">
+          <form id="jobData" data-id-job="" data-id-emp="">
           <div class="row">
             <div class="col-md-6">
               <label for="checkIn" class="form-label">Check-In estimado</label>
@@ -65,11 +67,11 @@ checkAuth();
           <div class="row">
             <div class="col-md-6">
               <label for="checkInEmp" class="form-label">Check-In empleado</label>
-              <input type="datetime-local" id="checkInEmp" class="form-control">
+              <input type="datetime-local" id="checkInEmp" class="form-control" step="1">
             </div>
             <div class="col-md-6">
               <label for="checkOutEmp" class="form-label">Check-Out empleado</label>
-              <input type="datetime-local" id="checkOutEmp" class="form-control">
+              <input type="datetime-local" id="checkOutEmp" class="form-control" step="1">
             </div>
           </div>
 
@@ -107,9 +109,10 @@ checkAuth();
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js'></script>
 <script>
+  let calendar = null;
   document.addEventListener('DOMContentLoaded', () => {
     const calendarEl = document.getElementById('calendar');
-    const calendar = new FullCalendar.Calendar(calendarEl, {
+    calendar = new FullCalendar.Calendar(calendarEl, {
       
       themeSystem: 'bootstrap5',
       
@@ -156,6 +159,8 @@ checkAuth();
         document.getElementById('checkOutEmp').value = formatForInput(job.check_out_employee);
         document.getElementById('adminComment').value = job.comment ?? '';
         document.getElementById('employeeComment').value = job.comment_employee ?? '';
+        document.getElementById('jobData').dataset.idJob = job.idjob;
+        document.getElementById('jobData').dataset.idEmp = job.idemployee;
 
         // Agregar listeners a los check_in
         /*
@@ -191,6 +196,56 @@ checkAuth();
       if (!datetimeStr) return '';
       return datetimeStr.replace(' ', 'T');
     }
+
+    document.getElementById('jobData').addEventListener('submit', function(e) {
+      e.preventDefault();
+      let checkInEmp = document.getElementById('checkInEmp').value;
+      let checkOutEmp = document.getElementById('checkOutEmp').value;
+      const adminComment = document.getElementById('adminComment').value;
+      const idJob = document.getElementById('jobData').dataset.idJob;
+      const idEmp = document.getElementById('jobData').dataset.idEmp;
+      // Remove seconds from datetimeStr
+      checkInEmp = checkInEmp.replace(/:\d{2}$/g, '');
+      checkOutEmp = checkOutEmp.replace(/:\d{2}$/g, '');
+      // Make a fecth call to save_checkinout.php to send this data via post and process the response using FromData object
+      const formData = new FormData();  
+      formData.append('checkInEmp', checkInEmp);
+      formData.append('checkOutEmp', checkOutEmp);
+      formData.append('adminComment', adminComment);
+      formData.append('idEmp', idEmp);
+      formData.append('action', 'updateJobOrder');
+      fetch('../callbacks/save_job_data_admin.php?id=' + idJob, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.code == 0) {
+          console.log(data.message);
+          // Display message in message-container
+          const messageContainer = document.getElementById('success-message');
+          messageContainer.innerHTML = data.message;
+          messageContainer.style.display = 'block';
+          setTimeout(() => {
+            messageContainer.style.display = 'none';
+          }, 3000);
+          // When all success refresh the calendar
+          calendar.refetchEvents();
+        } else {
+          // Handle error
+          console.error(data.message);
+          const errorContainer = document.getElementById('error-message');
+          errorContainer.innerHTML = "Error: " + error;
+          errorContainer.style.display = 'block';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        const errorContainer = document.getElementById('error-message');
+        errorContainer.innerHTML = "Error: " + error;
+        errorContainer.style.display = 'block';
+      });
+    });
 </script>
     </body>
 </html>

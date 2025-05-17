@@ -22,9 +22,9 @@ switch($_SESSION['role']) {
     </button>
     
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <?php if($role == 'admin'):?>
+     
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
+      <?php if($role == 'admin'):?>
         <li class="nav-item">
           <a class="nav-link" href="<?=genUrl('admin/user/')?>">Usuarios</a>
         </li>
@@ -34,17 +34,18 @@ switch($_SESSION['role']) {
         <li class="nav-item">
           <a class="nav-link" href="<?=genUrl('admin/job_order/')?>">Partes de trabajo</a>
         </li>
+      <?php endif;?>
         <li class="nav-item">
           <a class="nav-link" href="<?=genUrl('logout.php')?>">Salir</a>
         </li>
         
       </ul>
-      <?php endif;?>
+      
       <form class="d-flex" role="search">
         <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Buscar</button>
       </form>
     </div>
-    
   </div>
+    
 </nav>
